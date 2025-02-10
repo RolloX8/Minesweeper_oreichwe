@@ -1,4 +1,4 @@
-module com.oreichwe.minesweeper_idk {
+module com.oreichwe.minesweeper {
     requires javafx.controls;
     requires javafx.fxml;
 
