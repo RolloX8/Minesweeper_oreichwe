@@ -7,17 +7,22 @@ import javafx.scene.input.MouseButton;
 
 public class MinesweeperButtonController {
 
-    private boolean bomb;
-    private boolean flagged;
-    private boolean revealed;
-    private int bombsNearby;
+    private boolean bomb = false;
+    private boolean flagged = false;
+    private boolean revealed = false;
+    private int bombsNearby = -1;
+    private int positionX;
+    private int positionY;
+    private GamefieldController gamefieldController;
     @FXML
     private Button button;
     @FXML
     private Label label;
 
+
     //wird aufgerufen, wenn der Button angeklickt wird und gibt dann weiter auf Rechts bzw Linksklick
     public void onButtonClicked() {
+        System.out.println("onButtonClicked()");
 
         getButton().setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.PRIMARY) {
@@ -30,6 +35,7 @@ public class MinesweeperButtonController {
 
     //wird von onButtonClicked() aufgerufen, beihaltet die Abläufe, wenn ein Button linksgeklickt wird
     public void onButtonClickedPRIMARY() {
+        System.out.println("onButtonClickedPRIMARY()");
         if (!isFlagged()) {
             setRevealed(true);
             getButton().setVisible(false);
@@ -38,12 +44,14 @@ public class MinesweeperButtonController {
 
     //wird von onButtonClicked() aufgerufen, beihaltet die Abläufe, wenn ein Button rechtsgeklickt wird
     public void onButtonClickedSECUNDARY() {
+        System.out.println("onButtonClickedSECUNDARY()");
         setFlagged(!isFlagged());
     }
 
     //setzt das Feld hinter dem Button auf bomb oder auf die Anzahl der Bomben
-    public void setLabelBehindButton(){
-        if(bomb){
+    public void setLabelBehindButton() {
+        System.out.println("setLabelBehindButton()");
+        if (isBomb()) {
             getLabel().setText("bomb");
         } else {
             getLabel().setText(String.valueOf(getBombsNearby()));
@@ -51,17 +59,23 @@ public class MinesweeperButtonController {
     }
 
 
+    //speichert die Position des MinesweeperButtons im Grid
+    public void setPosition(int x, int y) {
+        System.out.println("setPosition(" + x + "," + y + ")");
+        setPositionX(x);
+        setPositionY(y);
+    }
 
 
 
     //Getter & Setter -------------------------------------------
-
     public boolean isBomb() {
         return bomb;
     }
 
     public void setBomb(boolean bomb) {
         this.bomb = bomb;
+        setLabelBehindButton();
     }
 
     public boolean isFlagged() {
@@ -91,8 +105,6 @@ public class MinesweeperButtonController {
     public int getBombsNearby() {
 
 
-
-
         return bombsNearby;
     }
 
@@ -106,5 +118,29 @@ public class MinesweeperButtonController {
 
     public void setLabel(Label label) {
         this.label = label;
+    }
+
+    public int getPositionX() {
+        return positionX;
+    }
+
+    public void setPositionX(int positionX) {
+        this.positionX = positionX;
+    }
+
+    public int getPositionY() {
+        return positionY;
+    }
+
+    public void setPositionY(int positionY) {
+        this.positionY = positionY;
+    }
+
+    public GamefieldController getGamefieldController() {
+        return gamefieldController;
+    }
+
+    public void setGamefieldController(GamefieldController gamefieldController) {
+        this.gamefieldController = gamefieldController;
     }
 }
