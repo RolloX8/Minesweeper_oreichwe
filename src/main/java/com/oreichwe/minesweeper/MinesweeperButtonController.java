@@ -33,6 +33,7 @@ public class MinesweeperButtonController {
         });
     }
 
+
     //wird von onButtonClicked() aufgerufen, beihaltet die Abläufe, wenn ein Button linksgeklickt wird
     public void onButtonClickedPRIMARY() {
         System.out.println("onButtonClickedPRIMARY()");
@@ -42,11 +43,13 @@ public class MinesweeperButtonController {
         }
     }
 
+
     //wird von onButtonClicked() aufgerufen, beihaltet die Abläufe, wenn ein Button rechtsgeklickt wird
     public void onButtonClickedSECUNDARY() {
         System.out.println("onButtonClickedSECUNDARY()");
         setFlagged(!isFlagged());
     }
+
 
     //setzt das Feld hinter dem Button auf bomb oder auf die Anzahl der Bomben
     public void setLabelBehindButton() {
@@ -65,6 +68,9 @@ public class MinesweeperButtonController {
         setPositionX(x);
         setPositionY(y);
     }
+
+
+
 
 
 
@@ -103,13 +109,12 @@ public class MinesweeperButtonController {
     }
 
     public int getBombsNearby() {
-
-
         return bombsNearby;
     }
 
     public void setBombsNearby(int bombsNearby) {
         this.bombsNearby = bombsNearby;
+        setLabelBehindButton();
     }
 
     public Label getLabel() {

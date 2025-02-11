@@ -30,43 +30,16 @@ public class GamefieldController {
         setDropDownDifficulties();
     }
 
-
-    //erstellt das Grid das später mit Buttons gefüllt wird
-    public void createGrid() {
-        System.out.println("createGrid()");
-
-        getGrid().getChildren().clear();
-
-        for (int i = 0; i < getGridLength(); i++) {
-            getGrid().addRow(i);
-            for (int j = 0; j < getGridWidth(); j++) {
-                getGrid().addColumn(j);
-            }
-        }
-    }
-
-
     //füllt das Grid entsprechend dem Schwierigkeitsgrad
     public void fillGrid() throws IOException {
         System.out.println("fillGrid()");
 
         for (int i = 0; i < getGridLength(); i++) {
             for (int j = 0; j < getGridWidth(); j++) {
-
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("minesweeperButton-view.fxml"));
-                Node minesweeperButton = fxmlLoader.load();
-
-                MinesweeperButtonController controller = fxmlLoader.getController();
-                controller.setPosition(i, j);
-                controller.setGamefieldController(this);
-
-                minesweeperButton.setUserData(controller);
-
-                getGrid().add(minesweeperButton, i, j);
+                getGrid().add(createMinesweeperButton(i, j), i, j);
             }
         }
     }
-
 
     //leert das Grid wieder
     public void clearGrid() {
@@ -74,6 +47,48 @@ public class GamefieldController {
         grid.getChildren().clear();
     }
 
+    //gibt das Element(Node) das in einem Grid an den stellen X, Y steht
+    public Node getNodeFromGrid(int x, int y) {
+        System.out.println("getNodeFromGrid()");
+
+        Node result = null;
+        for (Node node : getGrid().getChildren()) {
+            if (getGrid().getRowIndex(node).equals(x) && getGrid().getColumnIndex(node).equals(y)) {
+                result = node;
+                break;
+            }
+        }
+        return result;
+        //NOTE@MYSELF: https://stackoverflow.com/questions/20825935/javafx-get-node-by-row-and-column
+    }
+
+    //erstellt einen MinesweeperButton
+    public Node createMinesweeperButton(int x, int y) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("minesweeperButton-view.fxml"));
+        Node minesweeperButton = fxmlLoader.load();
+
+        MinesweeperButtonController controller = fxmlLoader.getController();
+        controller.setPosition(x, y);
+        controller.setGamefieldController(this);
+
+        minesweeperButton.setUserData(controller);
+
+        return minesweeperButton;
+    }
+
+    //setzt die Optionen des Schwierigkeitsgrads. zB Beginners, Pro, etc...
+    public void setDropDownDifficulties() {
+        System.out.println("setDropDownDifficulties()");
+
+        ObservableList<String> options = FXCollections.observableArrayList();
+        options.add("Beginners");
+        options.add("Advanced");
+        options.add("Pro");
+
+        difficulties.setItems(options);
+
+
+    }
 
     @FXML
     //setzt die Variablen gridLength, gridWidth und die Anzahl der Minen
@@ -98,26 +113,8 @@ public class GamefieldController {
                 setGridLength(30);
                 setGridWidth(16);
                 setNumberOfMines(99);
-
         }
-
     }
-
-
-    //setzt die Optionen des Schwierigkeitsgrads. zB Beginners, Pro, etc...
-    public void setDropDownDifficulties() {
-        System.out.println("setDropDownDifficulties()");
-
-        ObservableList<String> options = FXCollections.observableArrayList();
-        options.add("Beginners");
-        options.add("Advanced");
-        options.add("Pro");
-
-        difficulties.setItems(options);
-
-
-    }
-
 
     @FXML
     //startet das Spiel, wenn der Start-Knopf gedrückt wird
@@ -127,11 +124,12 @@ public class GamefieldController {
         if (getDifficulties().getValue() != null) {
             fillGrid();
             spreadBombs();
+            setBombsNearby();
+
         } else {
             System.out.println("No difficulty selected");
         }
     }
-
 
     //verteilt die Bomben zufällig auf den MinesweeperButtons
     public void spreadBombs() {
@@ -150,61 +148,50 @@ public class GamefieldController {
                     minesweeperButtonController.setBomb(true);
                     bombCount++;
                 }
-            }else{
+            } else {
                 System.out.println("minesweeperButtonController is null");
             }
         }
     }
 
-
-    //gibt das Element(Node) das in einem Grid an den stellen X,Y steht
-    public Node getNodeFromGrid(int x, int y) {
-        System.out.println("getNodeFromGrid()");
-
-        Node result = null;
-        for (Node node : getGrid().getChildren()) {
-            if (getGrid().getRowIndex(node).equals(x) && getGrid().getColumnIndex(node).equals(y)) {
-                result = node;
-                break;
+    //setzt die Anzahl der Bomben rundum eines Feldes im MinesweeperButtonController
+    public void setBombsNearby() {
+        for (int i = 0; i < getGridLength(); i++) {
+            for (int j = 0; j < getGridWidth(); j++) {
+                getMinesweeperButtonController(i, j).setBombsNearby(getBombsRoundPosition(i, j));
             }
         }
-        return result;
-        //NOTE@MYSELF: https://stackoverflow.com/questions/20825935/javafx-get-node-by-row-and-column
     }
 
+    //gibt die Anzahl der Bomben rundum eines Elements(Node), das in einem Grid an der Stelle X, Y ist, zurück
+    public int getBombsRoundPosition(int x, int y) {
+        System.out.println("bombsNearby()");
 
-    //Testcode von ChatGPT
-    /*    public Node getNodeFromGrid(int row, int col) {
-        System.out.println("getNodeFromGrid() called with x=" + row + " y=" + col);
+        int bombCounter = 0;
 
-        for (Node node : getGrid().getChildren()) {
-            Integer rowIndex = getGrid().getRowIndex(node);
-            Integer colIndex = getGrid().getColumnIndex(node);
-
-            System.out.println("Checking node: " + node);
-            System.out.println("Row: " + rowIndex + ", Column: " + colIndex);
-
-            if (rowIndex != null && colIndex != null && rowIndex == row && colIndex == col) {
-                System.out.println("✅ Found node at (" + row + "," + col + ")");
-                return node;
+        for (int i = -1; i < 2; i++) {
+            for (int j = -1; j < 2; j++) {
+                MinesweeperButtonController controller = getMinesweeperButtonController(x + i, y + j);
+                if (controller != null && controller.isBomb()) {
+                    bombCounter++;
+                }
             }
         }
-
-        System.out.println("❌ No node found at (" + row + "," + col + ")");
-        return null;
+        return bombCounter;
     }
 
- */
-
-
-
-    //gibt den MinesweeperButtonController zu dem Element das an der Stelle X,Y im Grid ist zurück
+    //gibt den MinesweeperButtonController zu dem Element das an der Stelle X, Y im Grid ist zurück
     public MinesweeperButtonController getMinesweeperButtonController(int x, int y) {
         System.out.println("getMinesweeperButtonController()");
 
         Node node = getNodeFromGrid(x, y);
-        return (MinesweeperButtonController) node.getUserData();
+        if (node != null) {
+            return (MinesweeperButtonController) node.getUserData();
+        } else {
+            return null;
+        }
     }
+
 
 
 
@@ -248,6 +235,4 @@ public class GamefieldController {
     public void setNumberOfMines(int numberOfMines) {
         this.numberOfMines = numberOfMines;
     }
-
-
 }
