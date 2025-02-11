@@ -4,13 +4,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 
 public class MinesweeperButtonController {
 
-    private boolean bomb = false;
-    private boolean flagged = false;
-    private boolean revealed = false;
-    private int bombsNearby = -1;
+    private boolean bomb;
+    private boolean flagged;
+    private boolean revealed;
+    private int bombsNearby;
     private int positionX;
     private int positionY;
     private GamefieldController gamefieldController;
@@ -19,18 +20,29 @@ public class MinesweeperButtonController {
     @FXML
     private Label label;
 
+    public void initialize() {
+        button.setFocusTraversable(false);
+        setDefaults();
+    }
+
+    public void setDefaults(){
+        setBomb(false);
+        setFlagged(false);
+        setRevealed(false);
+        setBombsNearby(0);
+    }
+
 
     //wird aufgerufen, wenn der Button angeklickt wird und gibt dann weiter auf Rechts bzw Linksklick
-    public void onButtonClicked() {
+    public void onButtonClicked(MouseEvent mouseEvent) {
         System.out.println("onButtonClicked()");
 
-        getButton().setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-                onButtonClickedPRIMARY();
-            } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                onButtonClickedSECUNDARY();
-            }
-        });
+        if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+            onButtonClickedPRIMARY();
+        } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+            onButtonClickedSECUNDARY();
+        }
+
     }
 
 
@@ -40,6 +52,9 @@ public class MinesweeperButtonController {
         if (!isFlagged()) {
             setRevealed(true);
             getButton().setVisible(false);
+            if (isBomb()) {
+                getGamefieldController().gameOver();
+            }
         }
     }
 
@@ -47,7 +62,18 @@ public class MinesweeperButtonController {
     //wird von onButtonClicked() aufgerufen, beihaltet die Abläufe, wenn ein Button rechtsgeklickt wird
     public void onButtonClickedSECUNDARY() {
         System.out.println("onButtonClickedSECUNDARY()");
-        setFlagged(!isFlagged());
+
+
+        if (!isFlagged()) {
+            setFlagged(true);
+            getButton().setText("flag");
+            getGamefieldController().updateFlags();
+
+        } else {
+            setFlagged(false);
+            getButton().setText("");
+            getGamefieldController().setNumberOfFlags(getGamefieldController().getNumberOfFlags() + 1);
+        }
     }
 
 
@@ -68,10 +94,6 @@ public class MinesweeperButtonController {
         setPositionX(x);
         setPositionY(y);
     }
-
-
-
-
 
 
     //Getter & Setter -------------------------------------------

@@ -22,7 +22,8 @@ public class GamefieldController {
 
     private int gridLength;
     private int gridWidth;
-    private int numberOfMines;
+    private int numberOfBombs;
+    private int numberOfFlags;
 
 
     @FXML
@@ -70,6 +71,7 @@ public class GamefieldController {
         MinesweeperButtonController controller = fxmlLoader.getController();
         controller.setPosition(x, y);
         controller.setGamefieldController(this);
+        controller.setDefaults();
 
         minesweeperButton.setUserData(controller);
 
@@ -91,7 +93,7 @@ public class GamefieldController {
     }
 
     @FXML
-    //setzt die Variablen gridLength, gridWidth und die Anzahl der Minen
+    //setzt die Variablen gridLength, gridWidth, die Anzahl der Minen und Anzahl der Flaggen
     public void onDifficultySelected() {
         System.out.println("public void setDifficulty()");
         System.out.println("Difficulty: " + getDifficulties().getValue());
@@ -102,18 +104,19 @@ public class GamefieldController {
             case "Beginners":
                 setGridLength(8);
                 setGridWidth(8);
-                setNumberOfMines(10);
+                setNumberOfBombs(1);
                 break;
             case "Advanced":
                 setGridLength(16);
                 setGridWidth(16);
-                setNumberOfMines(40);
+                setNumberOfBombs(40);
                 break;
             case "Pro":
                 setGridLength(30);
                 setGridWidth(16);
-                setNumberOfMines(99);
+                setNumberOfBombs(99);
         }
+        setNumberOfFlags(getNumberOfBombs());
     }
 
     @FXML
@@ -131,13 +134,49 @@ public class GamefieldController {
         }
     }
 
+    //aktualisiert die Anzahl der Flaggen und ruft gegebenenfalls checkForGameOver() auf
+    public void updateFlags(){
+        System.out.println("updateFlags()");
+        setNumberOfFlags(getNumberOfFlags() - 1);
+        if(getNumberOfFlags() == 0){
+            checkForGameOver();
+        }
+    }
+
+    //prüft, ob das Spiel vorbei ist, anhand der Anzahl der flaggen
+    public void checkForGameOver(){
+        System.out.println("checkForGameOver()");
+        int bombsIdentified = 0;
+        for (int i = 0; i < getGridLength(); i++) {
+            for (int j = 0; j < getGridWidth(); j++) {
+                if(getMinesweeperButtonController(i, j).isBomb() && getMinesweeperButtonController(i,j).isFlagged()){
+                    bombsIdentified++;
+                }
+            }
+        }
+        if(bombsIdentified == getNumberOfBombs()){
+            gameOver();
+        }
+
+    }
+
+    public void gameOver(){
+        System.out.println("gameOver()");
+
+        for(int i = 0; i < getGridLength(); i++){
+            for(int j = 0; j < getGridWidth(); j++){
+                getMinesweeperButtonController(i, j).getButton().setVisible(false);
+            }
+        }
+    }
+
     //verteilt die Bomben zufällig auf den MinesweeperButtons
     public void spreadBombs() {
         System.out.println("spreadBombs()");
 
         int bombCount = 0;
 
-        while (bombCount < getNumberOfMines()) {
+        while (bombCount < getNumberOfBombs()) {
 
             int randomX = new Random().nextInt(getGridWidth());
             int randomY = new Random().nextInt(getGridLength());
@@ -228,11 +267,19 @@ public class GamefieldController {
         this.gridWidth = gridWidth;
     }
 
-    public int getNumberOfMines() {
-        return numberOfMines;
+    public int getNumberOfBombs() {
+        return numberOfBombs;
     }
 
-    public void setNumberOfMines(int numberOfMines) {
-        this.numberOfMines = numberOfMines;
+    public void setNumberOfBombs(int numberOfBombs) {
+        this.numberOfBombs = numberOfBombs;
+    }
+
+    public int getNumberOfFlags() {
+        return numberOfFlags;
+    }
+
+    public void setNumberOfFlags(int numberOfFlags) {
+        this.numberOfFlags = numberOfFlags;
     }
 }
