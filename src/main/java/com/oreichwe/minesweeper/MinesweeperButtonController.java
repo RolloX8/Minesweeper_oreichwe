@@ -25,13 +25,17 @@ public class MinesweeperButtonController {
         setDefaults();
     }
 
+    //setzt die Werte auf Default, die dann überschrieben werden
     public void setDefaults(){
         setBomb(false);
         setFlagged(false);
         setRevealed(false);
-        setBombsNearby(0);
+        setBombsNearby(-1);
+        setPosition(-1,-1);
+        setGamefieldController(new GamefieldController());
+        getButton().setText("");
+        getLabel().setText("");
     }
-
 
     //wird aufgerufen, wenn der Button angeklickt wird und gibt dann weiter auf Rechts bzw Linksklick
     public void onButtonClicked(MouseEvent mouseEvent) {
@@ -45,19 +49,25 @@ public class MinesweeperButtonController {
 
     }
 
-
     //wird von onButtonClicked() aufgerufen, beihaltet die Abläufe, wenn ein Button linksgeklickt wird
     public void onButtonClickedPRIMARY() {
         System.out.println("onButtonClickedPRIMARY()");
         if (!isFlagged()) {
-            setRevealed(true);
-            getButton().setVisible(false);
+            revealField();
+            if(getBombsNearby() == 0){
+                getGamefieldController().revealFieldsAround(getPositionX(), getPositionY());
+            }
             if (isBomb()) {
                 getGamefieldController().gameOver();
             }
         }
     }
 
+    //deckt das Feld auf
+    public void revealField(){
+        setRevealed(true);
+        getButton().setVisible(false);
+    }
 
     //wird von onButtonClicked() aufgerufen, beihaltet die Abläufe, wenn ein Button rechtsgeklickt wird
     public void onButtonClickedSECUNDARY() {
@@ -76,7 +86,6 @@ public class MinesweeperButtonController {
         }
     }
 
-
     //setzt das Feld hinter dem Button auf bomb oder auf die Anzahl der Bomben
     public void setLabelBehindButton() {
         System.out.println("setLabelBehindButton()");
@@ -86,7 +95,6 @@ public class MinesweeperButtonController {
             getLabel().setText(String.valueOf(getBombsNearby()));
         }
     }
-
 
     //speichert die Position des MinesweeperButtons im Grid
     public void setPosition(int x, int y) {
