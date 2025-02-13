@@ -26,15 +26,11 @@ public class MinesweeperButtonController {
     }
 
     //setzt die Werte auf Default, die dann überschrieben werden
-    public void setDefaults(){
+    public void setDefaults() {
         setBomb(false);
         setFlagged(false);
         setRevealed(false);
-        setBombsNearby(-1);
-        setPosition(-1,-1);
-        setGamefieldController(new GamefieldController());
-        getButton().setText("");
-        getLabel().setText("");
+        setBombsNearby(0);
     }
 
     //wird aufgerufen, wenn der Button angeklickt wird und gibt dann weiter auf Rechts bzw Linksklick
@@ -54,17 +50,16 @@ public class MinesweeperButtonController {
         System.out.println("onButtonClickedPRIMARY()");
         if (!isFlagged()) {
             revealField();
-            if(getBombsNearby() == 0){
-                getGamefieldController().revealFieldsAround(getPositionX(), getPositionY());
-            }
             if (isBomb()) {
                 getGamefieldController().gameOver();
+            } else if (getBombsNearby() == 0) {
+                getGamefieldController().revealFieldsAround(getPositionX(), getPositionY());
             }
         }
     }
 
     //deckt das Feld auf
-    public void revealField(){
+    public void revealField() {
         setRevealed(true);
         getButton().setVisible(false);
     }

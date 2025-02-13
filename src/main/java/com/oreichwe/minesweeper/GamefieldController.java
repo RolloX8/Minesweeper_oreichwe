@@ -5,7 +5,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.GridPane;
 
@@ -30,23 +29,28 @@ public class GamefieldController {
     }
 
     //setzt die Werte auf Default, die dann überschrieben werden
-    private void setDefaults(){
-        setGridLength(-1);
-        setGridWidth(-1);
-        setNumberOfFlags(-1);
-        setNumberOfBombs(-1);
-        setGrid(new GridPane());
+    private void setDefaults() {
+        setGridLength(0);
+        setGridWidth(0);
+        setNumberOfFlags(0);
+        setNumberOfBombs(0);
         clearGrid();
     }
 
     //füllt das Grid entsprechend dem Schwierigkeitsgrad
     public void fillGrid() throws IOException {
+        if (getGridLength() != -1 && getGridWidth() != -1) {
 
-        for (int i = 0; i < getGridLength(); i++) {
-            for (int j = 0; j < getGridWidth(); j++) {
-                getGrid().add(createMinesweeperButton(i, j), i, j);
+            for (int i = 0; i < getGridLength(); i++) {
+                for (int j = 0; j < getGridWidth(); j++) {
+                    getGrid().add(createMinesweeperButton(i, j), i, j);
+                }
             }
+        } else {
+            System.out.println("no gridlength or gridwidth provided");
         }
+
+        System.out.println("Grid Children: " + grid.getChildren().size());
     }
 
     //leert das Grid wieder
@@ -56,15 +60,12 @@ public class GamefieldController {
 
     //gibt das Element(Node) das in einem Grid an den stellen X, Y steht
     public Node getNodeFromGrid(int x, int y) {
-
-        Node result = null;
         for (Node node : getGrid().getChildren()) {
-            if (getGrid().getRowIndex(node).equals(x) && getGrid().getColumnIndex(node).equals(y)) {
-                result = node;
-                break;
+            if (getGrid().getColumnIndex(node).equals(x) && getGrid().getRowIndex(node).equals(y)) {
+                return node;
             }
         }
-        return result;
+        return null;
         //NOTE@MYSELF: https://stackoverflow.com/questions/20825935/javafx-get-node-by-row-and-column
     }
 
@@ -76,7 +77,7 @@ public class GamefieldController {
         MinesweeperButtonController controller = fxmlLoader.getController();
         controller.setPosition(x, y);
         controller.setGamefieldController(this);
-        controller.setDefaults();
+        //controller.setDefaults();
 
         minesweeperButton.setUserData(controller);
 
@@ -85,25 +86,17 @@ public class GamefieldController {
 
     //setzt die Optionen des Schwierigkeitsgrads. zB Beginners, Pro, etc...
     public void setDropDownDifficulties() {
-        System.out.println("setDropDownDifficulties()");
-
         ObservableList<String> options = FXCollections.observableArrayList();
         options.add("Beginners");
         options.add("Advanced");
         options.add("Pro");
 
         difficulties.setItems(options);
-
-
     }
 
-    @FXML
-    //setzt die Variablen gridLength, gridWidth, die Anzahl der Minen und Anzahl der Flaggen
-    public void onDifficultySelected() {
-        System.out.println("public void setDifficulty()");
-        System.out.println("Difficulty: " + getDifficulties().getValue());
-
-        clearGrid();
+    //setzt die Variablen gridLength, gridWidth, die Anzahl der Bomben und Anzahl der Flaggen basierend auf den Schwierigkeitsgrad
+    public void setDifficultyDefaults() {
+        setDefaults();
 
         switch (getDifficulties().getValue()) {
             case "Beginners":
@@ -120,6 +113,9 @@ public class GamefieldController {
                 setGridLength(30);
                 setGridWidth(16);
                 setNumberOfBombs(99);
+                break;
+            default:
+                break;
         }
         setNumberOfFlags(getNumberOfBombs());
     }
@@ -127,9 +123,8 @@ public class GamefieldController {
     @FXML
     //startet das Spiel, wenn der Start-Knopf gedrückt wird
     public void onStartClicked() throws IOException {
-        System.out.println("startClicked()");
-
         if (getDifficulties().getValue() != null) {
+            setDifficultyDefaults();
             fillGrid();
             spreadBombs();
             setBombsNearby();
@@ -141,7 +136,6 @@ public class GamefieldController {
 
     //aktualisiert die Anzahl der Flaggen und ruft gegebenenfalls checkForGameOver() auf
     public void updateFlags() {
-        System.out.println("updateFlags()");
         setNumberOfFlags(getNumberOfFlags() - 1);
         if (getNumberOfFlags() == 0) {
             checkForGameOver();
@@ -150,7 +144,6 @@ public class GamefieldController {
 
     //prüft, ob das Spiel vorbei ist, anhand der Anzahl der flaggen
     public void checkForGameOver() {
-        System.out.println("checkForGameOver()");
         int bombsIdentified = 0;
         for (int i = 0; i < getGridLength(); i++) {
             for (int j = 0; j < getGridWidth(); j++) {
@@ -166,8 +159,6 @@ public class GamefieldController {
     }
 
     public void gameOver() {
-        System.out.println("gameOver()");
-
         for (int i = 0; i < getGridLength(); i++) {
             for (int j = 0; j < getGridWidth(); j++) {
                 getMinesweeperButtonController(i, j).getButton().setVisible(false);
@@ -177,10 +168,7 @@ public class GamefieldController {
 
     //verteilt die Bomben zufällig auf den MinesweeperButtons
     public void spreadBombs() {
-        System.out.println("spreadBombs()");
-
         int bombCount = 0;
-
         while (bombCount < getNumberOfBombs()) {
 
             int randomX = new Random().nextInt(getGridWidth());
@@ -209,8 +197,6 @@ public class GamefieldController {
 
     //gibt die Anzahl der Bomben rundum eines Elements(Node), das in einem Grid an der Stelle X, Y ist, zurück
     public int getBombsRoundPosition(int x, int y) {
-        System.out.println("bombsNearby()");
-
         int bombCounter = 0;
 
         for (int i = -1; i < 2; i++) {
@@ -226,8 +212,6 @@ public class GamefieldController {
 
     //gibt den MinesweeperButtonController zu dem Element das an der Stelle X, Y im Grid ist zurück
     public MinesweeperButtonController getMinesweeperButtonController(int x, int y) {
-        System.out.println("getMinesweeperButtonController()");
-
         Node node = getNodeFromGrid(x, y);
         if (node != null) {
             return (MinesweeperButtonController) node.getUserData();
@@ -236,16 +220,18 @@ public class GamefieldController {
         }
     }
 
-
     //deckt die umliegenden Felder auf. Wenn ein umliegendes Feld ebenfalls keine Bomben rundum hat(getBombsNearby() == 0) ruft sich die Methode rekursiv wieder auf
     public void revealFieldsAround(int x, int y) {
         for (int i = -1; i < 2; i++) {
             for (int j = -1; j < 2; j++) {
                 MinesweeperButtonController controller = getMinesweeperButtonController(x + i, y + j);
-                if (controller != null && !controller.isRevealed() && !controller.isFlagged()) {
-                    controller.revealField();
-                    if (controller.getBombsNearby() == 0) {
-                        revealFieldsAround(x + i, y + j);
+                if (controller != null) {
+                    if (!controller.isRevealed()) {
+                        controller.revealField();
+                        if (controller.getBombsNearby() == 0) {
+                            revealFieldsAround(x + i, y + j);
+                        }
+
                     }
                 }
             }
