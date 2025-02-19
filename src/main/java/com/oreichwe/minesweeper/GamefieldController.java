@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 
 import java.io.IOException;
@@ -21,11 +22,22 @@ public class GamefieldController {
     private GridPane grid;
     @FXML
     private ComboBox<String> difficulties = new ComboBox<>();
+    @FXML
+    private AnchorPane rootAnchor;
 
     @FXML
     private void initialize() {
         setDefaults();
         setDropDownDifficulties();
+    }
+
+    public void setStyles(){
+        int minesweeperButtonWidthAndLength = 100;
+        int gameWidth = getGridWidth() * minesweeperButtonWidthAndLength;
+        int gameLength = getGridLength() * minesweeperButtonWidthAndLength;
+
+        getRootAnchor().setStyle("-fx-pref-width: " + gameWidth + "px;");
+        getRootAnchor().setStyle("-fx-pref-height: " + gameLength + "px;");
     }
 
     //setzt die Werte auf Default, die dann überschrieben werden
@@ -125,6 +137,7 @@ public class GamefieldController {
     public void onStartClicked() throws IOException {
         if (getDifficulties().getValue() != null) {
             setDifficultyDefaults();
+            setStyles();
             fillGrid();
             spreadBombs();
             setBombsNearby();
@@ -153,15 +166,25 @@ public class GamefieldController {
             }
         }
         if (bombsIdentified == getNumberOfBombs()) {
-            gameOver();
+            gameOver(true);
         }
 
     }
 
-    public void gameOver() {
+    public void gameOver(boolean won) {
         for (int i = 0; i < getGridLength(); i++) {
             for (int j = 0; j < getGridWidth(); j++) {
-                getMinesweeperButtonController(i, j).getButton().setVisible(false);
+
+                getMinesweeperButtonController(i, j).getButton().setDisable(true);
+
+                if (won && !getMinesweeperButtonController(i, j).isBomb()) {
+                    getMinesweeperButtonController(i, j).revealField();
+                    System.out.println("you won!");
+
+                } else if (!won && getMinesweeperButtonController(i, j).isBomb()) {
+                    getMinesweeperButtonController(i, j).revealField();
+                    System.out.println("you blew up!");
+                }
             }
         }
     }
@@ -286,5 +309,13 @@ public class GamefieldController {
 
     public void setNumberOfFlags(int numberOfFlags) {
         this.numberOfFlags = numberOfFlags;
+    }
+
+    public AnchorPane getRootAnchor() {
+        return rootAnchor;
+    }
+
+    public void setRootAnchor(AnchorPane rootAnchor) {
+        this.rootAnchor = rootAnchor;
     }
 }

@@ -3,10 +3,18 @@ package com.oreichwe.minesweeper;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+
+import java.util.Objects;
 
 public class MinesweeperButtonController {
+
+    private final int styleMinesweeperButtonSize = 100;
+
 
     private boolean bomb;
     private boolean flagged;
@@ -19,9 +27,17 @@ public class MinesweeperButtonController {
     private Button button;
     @FXML
     private Label label;
+    @FXML
+    private ImageView mineImage;
+    @FXML
+    private AnchorPane MineCellAnchor;
+    @FXML
+    private ImageView backgroundImage;
+
 
     public void initialize() {
-        button.setFocusTraversable(false);
+        getButton().setFocusTraversable(false);
+        getButton().setDisable(false);
         setDefaults();
     }
 
@@ -51,7 +67,7 @@ public class MinesweeperButtonController {
         if (!isFlagged()) {
             revealField();
             if (isBomb()) {
-                getGamefieldController().gameOver();
+                getGamefieldController().gameOver(false);
             } else if (getBombsNearby() == 0) {
                 getGamefieldController().revealFieldsAround(getPositionX(), getPositionY());
             }
@@ -82,12 +98,11 @@ public class MinesweeperButtonController {
     }
 
     //setzt das Feld hinter dem Button auf bomb oder auf die Anzahl der Bomben
-    public void setLabelBehindButton() {
-        System.out.println("setLabelBehindButton()");
+    public void setImageBehindButton() {
         if (isBomb()) {
-            getLabel().setText("bomb");
+            setMineImage("/img/mine.png");
         } else {
-            getLabel().setText(String.valueOf(getBombsNearby()));
+                setMineImage("/img/" + getBombsNearby() + ".png");
         }
     }
 
@@ -98,6 +113,15 @@ public class MinesweeperButtonController {
         setPositionY(y);
     }
 
+    public void setMineImage(String path) {
+        getMineImage().setImage(getImage(path));
+        getMineImage().setFitHeight(30);
+        getMineImage().setFitWidth(30);
+    }
+
+    public Image getImage(String path){
+        return new Image(Objects.requireNonNull(getClass().getResource(path)).toExternalForm());
+    }
 
     //Getter & Setter -------------------------------------------
     public boolean isBomb() {
@@ -106,7 +130,6 @@ public class MinesweeperButtonController {
 
     public void setBomb(boolean bomb) {
         this.bomb = bomb;
-        setLabelBehindButton();
     }
 
     public boolean isFlagged() {
@@ -139,7 +162,7 @@ public class MinesweeperButtonController {
 
     public void setBombsNearby(int bombsNearby) {
         this.bombsNearby = bombsNearby;
-        setLabelBehindButton();
+        setImageBehindButton();
     }
 
     public Label getLabel() {
@@ -172,5 +195,33 @@ public class MinesweeperButtonController {
 
     public void setGamefieldController(GamefieldController gamefieldController) {
         this.gamefieldController = gamefieldController;
+    }
+
+    public ImageView getMineImage() {
+        return mineImage;
+    }
+
+    public void setMineImage(ImageView mineImage) {
+        this.mineImage = mineImage;
+    }
+
+    public AnchorPane getMineCellAnchor() {
+        return MineCellAnchor;
+    }
+
+    public void setMineCellAnchor(AnchorPane mineCellAnchor) {
+        MineCellAnchor = mineCellAnchor;
+    }
+
+    public int getStyleMinesweeperButtonSize() {
+        return styleMinesweeperButtonSize;
+    }
+
+    public ImageView getBackgroundImage() {
+        return backgroundImage;
+    }
+
+    public void setBackgroundImage(ImageView backgroundImage) {
+        this.backgroundImage = backgroundImage;
     }
 }

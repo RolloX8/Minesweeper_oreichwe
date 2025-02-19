@@ -1,0 +1,43 @@
+@font-face {
+    font-family: 'Spacedock Stencil';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Spacedock Stencil'), url('https://fonts.cdnfonts.com/s/4324/Spacedock%20Stencil.woff') format('woff');
+}
+
+
+* {
+    -fx-font-family: "Spacedock Stencil";
+}
+
+
+Button {
+    -fx-background-color: #92937f;
+    color: #21370e;
+}
+
+
+.startButton {
+
+}
+
+
+.minesweeperButtonAnchor {
+    -fx-pref-height: 40px;
+    -fx-pref-width: 40px;
+}
+
+.minesweeperButtonLabel {
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+    -fx-font-size: 17pt;
+}
+
+.minesweeperButtonButton {
+    -fx-pref-height: 30px;
+    -fx-pref-width: 30px;
+}
+
+.minesweeperButtonImage {
+
+}
