@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -20,6 +21,7 @@ import java.util.Objects;
 import java.util.Random;
 
 public class GamefieldController {
+
     private int gridLength;
     private int gridWidth;
     private int numberOfBombs;
@@ -36,6 +38,8 @@ public class GamefieldController {
     private Label winnerStatusLabel;
     @FXML
     private Label bombInfoLabel;
+    @FXML
+    private Button startButton;
 
     @FXML
     private void initialize() {
@@ -81,8 +85,7 @@ public class GamefieldController {
 
     //füllt das Grid entsprechend dem Schwierigkeitsgrad
     public void fillGrid() throws IOException {
-        if (getGridLength() != -1 && getGridWidth() != -1) {
-
+        if (getGridLength() > 0 && getGridWidth() > 0) {
             for (int i = 0; i < getGridLength(); i++) {
                 for (int j = 0; j < getGridWidth(); j++) {
                     getGrid().add(createMinesweeperButton(i, j), i, j);
@@ -106,7 +109,6 @@ public class GamefieldController {
             }
         }
         return null;
-        //NOTE@MYSELF: https://stackoverflow.com/questions/20825935/javafx-get-node-by-row-and-column
     }
 
     //erstellt einen MinesweeperButton
@@ -223,6 +225,10 @@ public class GamefieldController {
         for (int i = 0; i < getGridLength(); i++) {
             for (int j = 0; j < getGridWidth(); j++) {
 
+                if(getMinesweeperButtonController(i,j).isBomb() && getMinesweeperButtonController(i,j).isFlagged()) {
+                    bombsFound++;
+                }
+
                 if (won && !getMinesweeperButtonController(i, j).isBomb()) {
                     getMinesweeperButtonController(i, j).revealField();
                     System.out.println("you won!");
@@ -230,19 +236,18 @@ public class GamefieldController {
                 } else if (!won && getMinesweeperButtonController(i, j).isBomb()) {
                     getMinesweeperButtonController(i, j).revealField();
                     System.out.println("you blew up!");
-                    bombsFound++;
                 }
             }
         }
 
         int finalBombsFound = bombsFound;
-        PauseTransition pause = new PauseTransition(Duration.seconds(2));
-
+        PauseTransition pause = new PauseTransition(Duration.seconds(1.5));
         pause.setOnFinished(event -> {
             clearGrid();
             setRootAnchorStartSize();
             setStartImage("/img/end.png");
             ((Stage) getRootAnchor().getScene().getWindow()).sizeToScene();
+            getStartButton().setDisable(false);
 
             if (won) {
                 getBombInfoLabel().setText("You won!");
@@ -252,7 +257,10 @@ public class GamefieldController {
                 getBombInfoLabel().setText("You found " + finalBombsFound + " bombs.");
             }
         });
+
+        getStartButton().setDisable(true);
         pause.play();
+
     }
 
     //verteilt die Bomben zufällig auf den MinesweeperButtons
@@ -260,8 +268,8 @@ public class GamefieldController {
         int bombCount = 0;
         while (bombCount < getNumberOfBombs()) {
 
-            int randomX = new Random().nextInt(getGridWidth());
-            int randomY = new Random().nextInt(getGridLength());
+            int randomX = new Random().nextInt(getGridLength());
+            int randomY = new Random().nextInt(getGridWidth());
 
             MinesweeperButtonController minesweeperButtonController = getMinesweeperButtonController(randomX, randomY);
             if (minesweeperButtonController != null) {
@@ -424,5 +432,13 @@ public class GamefieldController {
 
     public void setBombInfoLabel(Label bombInfoLabel) {
         this.bombInfoLabel = bombInfoLabel;
+    }
+
+    public Button getStartButton() {
+        return startButton;
+    }
+
+    public void setStartButton(Button startButton) {
+        this.startButton = startButton;
     }
 }

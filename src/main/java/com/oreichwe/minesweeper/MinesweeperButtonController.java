@@ -83,7 +83,7 @@ public class MinesweeperButtonController {
 
         if (!isFlagged()) {
             setFlagged(true);
-            setFlagImage("/img/falg.png");
+            setFlagImage("/img/falg2.png");
             getGamefieldController().updateFlags();
 
         } else {

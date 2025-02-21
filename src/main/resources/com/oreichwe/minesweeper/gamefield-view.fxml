@@ -20,7 +20,7 @@
     </GridPane>
 
     <ComboBox fx:id="difficulties" focusTraversable="false" layoutY="1.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="150.0" promptText="difficulty" styleClass="militaryFont" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="2.0" />
-    <Button focusTraversable="false" layoutX="180.0" layoutY="1.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#onStartClicked" prefHeight="26.0" prefWidth="70.0" styleClass="militaryFont" text="start" AnchorPane.leftAnchor="156.0" AnchorPane.topAnchor="2.0" />
+    <Button fx:id="startButton" focusTraversable="false" layoutX="180.0" layoutY="1.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#onStartClicked" prefHeight="26.0" prefWidth="70.0" styleClass="militaryFont" text="start" AnchorPane.leftAnchor="156.0" AnchorPane.topAnchor="2.0" />
     <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="26.0" prefWidth="26.0" text="Button" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="2.0" />
     <Label maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="40.0" text="00:11" AnchorPane.rightAnchor="32.0" AnchorPane.topAnchor="2.0" />
     <ImageView fx:id="startImage" fitHeight="356.0" fitWidth="356.0" layoutX="371.0" layoutY="57.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="30.0">
