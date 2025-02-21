@@ -2,25 +2,29 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane fx:id="rootAnchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-            prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.oreichwe.minesweeper.GamefieldController">
-    <GridPane fx:id="grid" layoutX="119.0" layoutY="126.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+<AnchorPane fx:id="rootAnchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="390.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.oreichwe.minesweeper.GamefieldController">
+    <GridPane fx:id="grid" layoutX="119.0" layoutY="126.0" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="30.0">
         <columnConstraints>
-            <ColumnConstraints/>
+            <ColumnConstraints />
         </columnConstraints>
         <rowConstraints>
-            <RowConstraints/>
+            <RowConstraints />
         </rowConstraints>
     </GridPane>
 
-    <ComboBox focusTraversable="false" fx:id="difficulties" layoutY="1.0" prefWidth="150.0"
-              promptText="difficulty"/>
-    <Button styleClass="startButton" focusTraversable="false" onMouseClicked="#onStartClicked" layoutX="176.0" layoutY="1.0" mnemonicParsing="false" text="start"/>
+    <ComboBox fx:id="difficulties" focusTraversable="false" layoutY="1.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="150.0" promptText="difficulty" styleClass="militaryFont" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="2.0" />
+    <Button focusTraversable="false" layoutX="180.0" layoutY="1.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#onStartClicked" prefHeight="26.0" prefWidth="70.0" styleClass="militaryFont" text="start" AnchorPane.leftAnchor="156.0" AnchorPane.topAnchor="2.0" />
+    <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="26.0" prefWidth="26.0" text="Button" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="2.0" />
+    <Label maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="40.0" text="00:11" AnchorPane.rightAnchor="32.0" AnchorPane.topAnchor="2.0" />
+    <ImageView fx:id="startImage" fitHeight="356.0" fitWidth="356.0" layoutX="371.0" layoutY="57.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="30.0">
+    </ImageView>
+    <Label fx:id="winnerStatusLabel" layoutX="61.0" layoutY="255.0" mouseTransparent="true" prefHeight="51.0" prefWidth="238.0" styleClass="winnerStatusLabel, timerFont" text="you won" />
+    <Label fx:id="bombInfoLabel" layoutX="61.0" layoutY="290.0" mouseTransparent="true" prefHeight="34.0" prefWidth="238.0" styleClass="bombInfoLabel, timerFont" text="you found 0 bombs" />
 </AnchorPane>

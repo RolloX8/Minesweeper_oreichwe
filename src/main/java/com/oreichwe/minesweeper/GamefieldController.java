@@ -1,19 +1,25 @@
 package com.oreichwe.minesweeper;
 
+import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Random;
 
 public class GamefieldController {
-
     private int gridLength;
     private int gridWidth;
     private int numberOfBombs;
@@ -24,20 +30,44 @@ public class GamefieldController {
     private ComboBox<String> difficulties = new ComboBox<>();
     @FXML
     private AnchorPane rootAnchor;
+    @FXML
+    private ImageView startImage;
+    @FXML
+    private Label winnerStatusLabel;
+    @FXML
+    private Label bombInfoLabel;
 
     @FXML
     private void initialize() {
         setDefaults();
         setDropDownDifficulties();
+        setStylesBevorGame();
+
     }
 
-    public void setStyles(){
-        int minesweeperButtonWidthAndLength = 100;
-        int gameWidth = getGridWidth() * minesweeperButtonWidthAndLength;
-        int gameLength = getGridLength() * minesweeperButtonWidthAndLength;
+    public void setStylesBevorGame() {
+        setRootAnchorStartSize();
+        setStartImage("/img/start2.png");
+        getWinnerStatusLabel().setText("");
+        getBombInfoLabel().setText("");
 
-        getRootAnchor().setStyle("-fx-pref-width: " + gameWidth + "px;");
-        getRootAnchor().setStyle("-fx-pref-height: " + gameLength + "px;");
+    }
+
+    public void setStylesForGame() {
+        int minesweeperButtonWidthAndLength = 40;
+        int marginButton = 0;
+        int marginGrid = 2;
+        int topMenu = 30-marginGrid;
+        int gameWidth = getGridLength() * minesweeperButtonWidthAndLength + marginButton*2 + marginGrid*2;
+        int gameHeight = getGridWidth() * minesweeperButtonWidthAndLength + marginButton*2 + marginGrid*2 + topMenu;
+
+        clearStartImage();
+
+        getRootAnchor().setPrefWidth(gameWidth);
+        getRootAnchor().setPrefHeight(gameHeight);
+
+        ((Stage) getRootAnchor().getScene().getWindow()).sizeToScene();
+
     }
 
     //setzt die Werte auf Default, die dann überschrieben werden
@@ -61,8 +91,6 @@ public class GamefieldController {
         } else {
             System.out.println("no gridlength or gridwidth provided");
         }
-
-        System.out.println("Grid Children: " + grid.getChildren().size());
     }
 
     //leert das Grid wieder
@@ -94,6 +122,18 @@ public class GamefieldController {
         minesweeperButton.setUserData(controller);
 
         return minesweeperButton;
+    }
+
+    public void activateButtons(boolean activate) {
+        for (int i = 0; i < getGridLength(); i++) {
+            for (int j = 0; j < getGridWidth(); j++) {
+                if (activate) {
+                    getMinesweeperButtonController(i, j).getButton().setDisable(false);
+                } else {
+                    getMinesweeperButtonController(i, j).getButton().setDisable(true);
+                }
+            }
+        }
     }
 
     //setzt die Optionen des Schwierigkeitsgrads. zB Beginners, Pro, etc...
@@ -135,13 +175,16 @@ public class GamefieldController {
     @FXML
     //startet das Spiel, wenn der Start-Knopf gedrückt wird
     public void onStartClicked() throws IOException {
+        getWinnerStatusLabel().setText("");
+        getBombInfoLabel().setText("");
+
         if (getDifficulties().getValue() != null) {
             setDifficultyDefaults();
-            setStyles();
+            setStylesForGame();
             fillGrid();
+            activateButtons(true);
             spreadBombs();
             setBombsNearby();
-
         } else {
             System.out.println("No difficulty selected");
         }
@@ -172,10 +215,13 @@ public class GamefieldController {
     }
 
     public void gameOver(boolean won) {
+        int bombsFound = 0;
+
+        activateButtons(false);
+
+
         for (int i = 0; i < getGridLength(); i++) {
             for (int j = 0; j < getGridWidth(); j++) {
-
-                getMinesweeperButtonController(i, j).getButton().setDisable(true);
 
                 if (won && !getMinesweeperButtonController(i, j).isBomb()) {
                     getMinesweeperButtonController(i, j).revealField();
@@ -184,9 +230,29 @@ public class GamefieldController {
                 } else if (!won && getMinesweeperButtonController(i, j).isBomb()) {
                     getMinesweeperButtonController(i, j).revealField();
                     System.out.println("you blew up!");
+                    bombsFound++;
                 }
             }
         }
+
+        int finalBombsFound = bombsFound;
+        PauseTransition pause = new PauseTransition(Duration.seconds(2));
+
+        pause.setOnFinished(event -> {
+            clearGrid();
+            setRootAnchorStartSize();
+            setStartImage("/img/end.png");
+            ((Stage) getRootAnchor().getScene().getWindow()).sizeToScene();
+
+            if (won) {
+                getBombInfoLabel().setText("You won!");
+                getBombInfoLabel().setText("You found all bombs!");
+            } else {
+                getWinnerStatusLabel().setText("You blew up!");
+                getBombInfoLabel().setText("You found " + finalBombsFound + " bombs.");
+            }
+        });
+        pause.play();
     }
 
     //verteilt die Bomben zufällig auf den MinesweeperButtons
@@ -261,6 +327,23 @@ public class GamefieldController {
         }
     }
 
+    public void setStartImage(String path) {
+        getStartImage().setImage(getImage(path));
+    }
+
+    public void clearStartImage() {
+        getStartImage().setImage(getImage("/img/empty.png"));
+    }
+
+    public Image getImage(String path) {
+        return new Image(Objects.requireNonNull(getClass().getResource(path)).toExternalForm());
+    }
+
+    public void setRootAnchorStartSize() {
+        getRootAnchor().setPrefHeight(390);
+        getRootAnchor().setPrefWidth(360);
+    }
+
 
     //getter&setter---------------------------------------
     public GridPane getGrid() {
@@ -317,5 +400,29 @@ public class GamefieldController {
 
     public void setRootAnchor(AnchorPane rootAnchor) {
         this.rootAnchor = rootAnchor;
+    }
+
+    public ImageView getStartImage() {
+        return startImage;
+    }
+
+    public void setStartImage(ImageView startImage) {
+        this.startImage = startImage;
+    }
+
+    public Label getWinnerStatusLabel() {
+        return winnerStatusLabel;
+    }
+
+    public void setWinnerStatusLabel(Label winnerStatusLabel) {
+        this.winnerStatusLabel = winnerStatusLabel;
+    }
+
+    public Label getBombInfoLabel() {
+        return bombInfoLabel;
+    }
+
+    public void setBombInfoLabel(Label bombInfoLabel) {
+        this.bombInfoLabel = bombInfoLabel;
     }
 }

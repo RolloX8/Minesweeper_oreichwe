@@ -5,39 +5,40 @@
     src: local('Spacedock Stencil'), url('https://fonts.cdnfonts.com/s/4324/Spacedock%20Stencil.woff') format('woff');
 }
 
-
-* {
-    -fx-font-family: "Spacedock Stencil";
+@font-face {
+    font-family: 'DS-Digital';
+    font-style: normal;
+    font-weight: 700;
+    src: local('DS-Digital'), url('https://fonts.cdnfonts.com/s/15049/DS-DIGI.woff') format('woff');
 }
 
+Label {
+    -fx-alignment: center;
+}
 
 Button {
     -fx-background-color: #92937f;
-    color: #21370e;
 }
 
-
-.startButton {
-
+ComboBox {
+    -fx-background-color: #92937f;
 }
 
-
-.minesweeperButtonAnchor {
-    -fx-pref-height: 40px;
-    -fx-pref-width: 40px;
+.timerFont {
+    -fx-font-family: "DS-Digital";
+    -fx-text-fill: #610000;
+    -fx-effect: dropshadow(gaussian, #c83c3c, 12, 0.5, 0, 0);
 }
 
-.minesweeperButtonLabel {
-    -fx-alignment: center;
-    -fx-text-alignment: center;
-    -fx-font-size: 17pt;
+.militaryFont {
+    -fx-font-family: "Spacedock Stencil";
+    -fx-text-fill: #21370e;
 }
 
-.minesweeperButtonButton {
-    -fx-pref-height: 30px;
-    -fx-pref-width: 30px;
+.winnerStatusLabel {
+    -fx-font-size: 30pt;
 }
 
-.minesweeperButtonImage {
-
+.bombInfoLabel {
+    -fx-font-size: 20pt;
 }
